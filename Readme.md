@@ -9,7 +9,17 @@
 
 ## API
 
-   
+#### Sortable(el)   
+
+Initialize Sortable with `el`.
+
+#### .bind()
+
+Bind internal events.
+
+#### .unbind()
+
+Unbind internal events.
 
 ## License
 
