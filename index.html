@@ -1,1 +1,74 @@
-My Page
+<!doctype html>
+<html>
+  <head>
+    <title>UI Sortable</title>
+    <script src='build/build.js'></script>
+    <style>
+
+      body {
+        padding: 80px;
+        font-family: 'Helvetica Neue';
+        font-weight: 200;
+      }
+
+      h2 {
+        font-weight: inherit;
+      }
+
+      ul {
+        list-style: none;
+        width: 200px;
+      }
+
+      ul li {
+        display: block;
+        padding: 8px;
+        height: 20px;
+      }
+
+      .languages li {
+        border-bottom: 1px solid #ddd;
+      }
+
+      .numbers li {
+        float: left;
+        border: 1px solid #f0f0f0;
+        margin: 8px;
+        width: 20px;
+        height: 20px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+
+    <h2>Simple</h2>
+    <ul class='languages'>
+      <li>Javascript</li>
+      <li>Lua</li>
+      <li>Google Go</li>
+      <li>Julia</li>
+    </ul>
+
+    <h2>Grid</h2>
+    <ul class='numbers'>
+      <li>1</li>
+      <li>2</li>
+      <li>3</li>
+      <li>4</li>
+      <li>5</li>
+      <li>6</li>
+      <li>7</li>
+    </ul>
+
+    <script>
+      var Sortable = require('sortable');
+      var els = document.querySelectorAll('ul');
+
+      [].slice.call(els).forEach(function(el){
+        var sortable = new Sortable(el);
+        sortable.bind();
+      });
+    </script>
+  </body>
+</html>
