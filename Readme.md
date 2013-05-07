@@ -1,7 +1,7 @@
 
 # sortable
 
-  UI Sortable component.
+  UI Sortable component, see the [demo](http://yields.github.io/sortable/index.html).
 
 ## Installation
 
