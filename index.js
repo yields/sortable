@@ -5,7 +5,8 @@
 
 var emitter = require('emitter')
   , classes = require('classes')
-  , events = require('events');
+  , events = require('events')
+  , indexof = require('indexof');
 
 /**
  * export `Sortable`
@@ -151,17 +152,4 @@ function prop(els, prop, val){
   for (var i = 0, len = els.length; i < len; ++i) {
     els[i][prop] = val
   }
-}
-
-/**
- * get index of the given `el`.
- * 
- * @param {Element} el
- * @return {Number}
- */
-
-function indexof(el){
-  if (!el.parentNode) return -1;
-  var els = el.parentNode.children;
-  return [].indexOf.call(els, el);
 }
