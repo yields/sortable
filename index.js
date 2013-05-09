@@ -41,8 +41,6 @@ emitter(Sortable.prototype);
  */
 
 Sortable.prototype.bind = function(e){
-  this.events.bind('mousedown');
-  this.events.bind('mouseup');
   this.events.bind('dragstart');
   this.events.bind('dragover');
   this.events.bind('dragenter');
@@ -68,23 +66,43 @@ Sortable.prototype.unbind = function(e){
 };
 
 /**
- * on-mousedown
+ * Connect the given `sortable`.
+ * 
+ * once connected you can drag elements from
+ * the given sortable to this sortable.
+ * 
+ * Example:
+ * 
+ *      one <> two
+ *      
+ *      one
+ *      .connect(two)
+ *      .connect(one);
+ *      
+ *      two > one
+ *      
+ *      one
+ *      .connect(two)
+ *      
+ *      one > two > three
+ *      
+ *      three
+ *      .connect(two)
+ *      .connect(one);
+ * 
+ * @param {Sortable} sortable
+ * @return {Sortable} the given sortable.
  */
 
-Sortable.prototype.onmousedown = function(e){
-  if (this.el == e.target.parentNode) {
-    this.draggable = e.target;
-    this.i = indexof(this.draggable);
-    this.display = window.getComputedStyle(e.target).display;
-  }
-};
-
-/**
- * on-mouseup
- */
-
-Sortable.prototype.onmouseup = function(){
-  this.draggable = null;
+Sortable.prototype.connect = function(sortable){
+  var self = this;
+  this.on('drop', this.reset.bind(sortable));
+  return sortable.on('start', function(){
+    self.draggable = sortable.draggable;
+    self.clone = sortable.clone;
+    self.display = sortable.display;
+    self.i = sortable.i;
+  });
 };
 
 /**
@@ -92,9 +110,12 @@ Sortable.prototype.onmouseup = function(){
  */
 
 Sortable.prototype.ondragstart = function(e){
-  if (!this.draggable) return;
+  this.draggable = e.target;
+  this.display = window.getComputedStyle(e.target).display;
+  this.i = indexof(e.target);
   e.dataTransfer.effectAllowed = 'move';
   classes(e.target).add('dragging');
+  this.emit('start', e);
 };
 
 /**
@@ -105,6 +126,7 @@ Sortable.prototype.ondragstart = function(e){
 Sortable.prototype.ondragenter = 
 Sortable.prototype.ondragover = function(e){
   if (!this.draggable) return;
+  if (e.target == this.el) return;
   e.preventDefault();
   e.dataTransfer.dropEffect = 'move';
   this.draggable.style.display = 'none';
@@ -121,7 +143,7 @@ Sortable.prototype.ondragover = function(e){
 
 Sortable.prototype.ondragend = function(e){
   if (!this.draggable) return;
-  if (this.clone.parentNode) this.el.removeChild(this.clone);
+  if (this.clone) remove(this.clone);
   this.draggable.style.display = this.display;
   classes(this.draggable).remove('dragging');
   if (this.i == indexof(this.draggable)) return;
@@ -136,7 +158,34 @@ Sortable.prototype.ondrop = function(e){
   e.stopPropagation();
   this.el.insertBefore(this.draggable, this.clone);
   this.ondragend(e);
+  this.emit('drop');
+  this.reset();
 };
+
+/**
+ * Reset sortable.
+ * 
+ * @api private
+ * @return {Sortable}
+ */
+
+Sortable.prototype.reset = function(){
+  this.draggable = null;
+  this.display = null;
+  this.i = null;
+};
+
+/**
+ * Remove the given `el`.
+ * 
+ * @param {Element} el
+ * @return {Element}
+ */
+
+function remove(el){
+  if (!el.parentNode) return;
+  el.parentNode.removeChild(el);
+}
 
 /**
  * set `els` `prop` to `val`.

@@ -21,6 +21,24 @@ Bind internal events.
 
 Unbind internal events.
 
+#### .connect(sortable)
+
+Connect with `Sortable` instance, the method returns the given `Sortable`.
+
+```js
+one = new Sortable(query('.one'));
+two = new Sortable(query('.two'));
+
+// one <> two
+one
+.connect(two)
+.connect(one);
+
+// one > two
+one.connect(two);
+
+```
+
 ## License
 
   MIT

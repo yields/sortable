@@ -17,17 +17,19 @@
 
       ul {
         list-style: none;
+        padding: 20px 20px;
         width: 200px;
       }
 
       ul li {
         display: block;
         padding: 8px;
+        border-bottom: 1px solid #ddd;
         height: 20px;
       }
 
-      .languages li {
-        border-bottom: 1px solid #ddd;
+      .numbers {
+        height: 200px;
       }
 
       .numbers li {
@@ -38,11 +40,12 @@
         height: 20px;
         text-align: center;
       }
+
     </style>
   </head>
   <body>
 
-    <h2>Simple</h2>
+    <h2>List</h2>
     <ul class='languages'>
       <li>Javascript</li>
       <li>Lua</li>
@@ -61,14 +64,38 @@
       <li>7</li>
     </ul>
 
+    <h2>Connected</h2>
+    <ul class='one'>
+      <li>1</li>
+      <li>2</li>
+      <li>3</li>
+    </ul>
+    <ul>
+      <li>4</li>
+      <li>5</li>
+      <li>6</li>
+    </ul>
+
     <script>
       var Sortable = require('sortable');
-      var els = document.querySelectorAll('ul');
+      var els = document.querySelectorAll('.numbers, .languages');
+      var ul = document.querySelector('.one');
 
+      // all
       [].slice.call(els).forEach(function(el){
         var sortable = new Sortable(el);
         sortable.bind();
       });
+
+      // connected
+      var one = new Sortable(ul);
+      var two = new Sortable(ul.nextElementSibling);
+
+      // two <> one
+      two.bind()
+      .connect(one.bind())
+      .connect(two);
+
     </script>
   </body>
 </html>
