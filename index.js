@@ -130,9 +130,12 @@ Sortable.prototype.ondragover = function(e){
   e.preventDefault();
   e.dataTransfer.dropEffect = 'move';
   this.draggable.style.display = 'none';
-  var ci = indexof(this.clone);
-  var i = indexof(e.target);
   var el = e.target;
+  while (el.parentElement.id != this.el.id) {
+    el = el.parentElement
+  }
+  var ci = indexof(this.clone);
+  var i = indexof(el);
   if (ci < i) el = el.nextSibling;
   this.el.insertBefore(this.clone, el);
 };
