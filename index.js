@@ -131,9 +131,7 @@ Sortable.prototype.ondragover = function(e){
   e.dataTransfer.dropEffect = 'move';
   this.draggable.style.display = 'none';
   var el = e.target;
-  while (el.parentElement.id != this.el.id) {
-    el = el.parentElement
-  }
+  while (el.parentElement != this.el) el = el.parentElement;
   var ci = indexof(this.clone);
   var i = indexof(el);
   if (ci < i) el = el.nextSibling;
