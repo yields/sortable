@@ -113,6 +113,7 @@ Sortable.prototype.ondragstart = function(e){
   this.draggable = e.target;
   this.display = window.getComputedStyle(e.target).display;
   this.i = indexof(e.target);
+  e.dataTransfer.setData('text', ' ');
   e.dataTransfer.effectAllowed = 'move';
   classes(e.target).add('dragging');
   this.emit('start', e);
@@ -125,14 +126,15 @@ Sortable.prototype.ondragstart = function(e){
 
 Sortable.prototype.ondragenter =
 Sortable.prototype.ondragover = function(e){
+  e.preventDefault();
   if (!this.draggable) return;
   if (e.target == this.el) return;
-  e.preventDefault();
   e.dataTransfer.dropEffect = 'move';
   this.draggable.style.display = 'none';
-  var ci = indexof(this.clone);
-  var i = indexof(e.target);
   var el = e.target;
+  while (el.parentElement != this.el) el = el.parentElement;
+  var ci = indexof(this.clone);
+  var i = indexof(el);
   if (ci < i) el = el.nextSibling;
   this.el.insertBefore(this.clone, el);
 };
