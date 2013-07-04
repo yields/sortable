@@ -16,7 +16,7 @@ module.exports = Sortable;
 
 /**
  * Initialize `Sortable` with `el`.
- * 
+ *
  * @param {Element} el
  */
 
@@ -36,7 +36,7 @@ emitter(Sortable.prototype);
 
 /**
  * bind internal events.
- * 
+ *
  * @return {Sortable}
  */
 
@@ -55,7 +55,7 @@ Sortable.prototype.bind = function(e){
 
 /**
  * unbind internal events.
- * 
+ *
  * @return {Sortable}
  */
 
@@ -67,29 +67,29 @@ Sortable.prototype.unbind = function(e){
 
 /**
  * Connect the given `sortable`.
- * 
+ *
  * once connected you can drag elements from
  * the given sortable to this sortable.
- * 
+ *
  * Example:
- * 
+ *
  *      one <> two
- *      
+ *
  *      one
  *      .connect(two)
  *      .connect(one);
- *      
+ *
  *      two > one
- *      
+ *
  *      one
  *      .connect(two)
- *      
+ *
  *      one > two > three
- *      
+ *
  *      three
  *      .connect(two)
  *      .connect(one);
- * 
+ *
  * @param {Sortable} sortable
  * @return {Sortable} the given sortable.
  */
@@ -113,6 +113,7 @@ Sortable.prototype.ondragstart = function(e){
   this.draggable = e.target;
   this.display = window.getComputedStyle(e.target).display;
   this.i = indexof(e.target);
+  e.dataTransfer.setData('text', ' ');
   e.dataTransfer.effectAllowed = 'move';
   classes(e.target).add('dragging');
   this.emit('start', e);
@@ -123,11 +124,11 @@ Sortable.prototype.ondragstart = function(e){
  * on-dragenter
  */
 
-Sortable.prototype.ondragenter = 
+Sortable.prototype.ondragenter =
 Sortable.prototype.ondragover = function(e){
+  e.preventDefault();
   if (!this.draggable) return;
   if (e.target == this.el) return;
-  e.preventDefault();
   e.dataTransfer.dropEffect = 'move';
   this.draggable.style.display = 'none';
   var el = e.target;
@@ -165,7 +166,7 @@ Sortable.prototype.ondrop = function(e){
 
 /**
  * Reset sortable.
- * 
+ *
  * @api private
  * @return {Sortable}
  */
@@ -178,7 +179,7 @@ Sortable.prototype.reset = function(){
 
 /**
  * Remove the given `el`.
- * 
+ *
  * @param {Element} el
  * @return {Element}
  */
@@ -190,9 +191,9 @@ function remove(el){
 
 /**
  * set `els` `prop` to `val`.
- * 
+ *
  * TODO: separate component
- * 
+ *
  * @param {NodeList} els
  * @param {String} prop
  * @param {Mixed} val
