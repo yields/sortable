@@ -2,7 +2,7 @@
   "name": "sortable",
   "repo": "yields/sortable",
   "description": "UI Sortable component.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "keywords": ["draggable"],
   "dependencies": {
     "component/emitter": "*",
