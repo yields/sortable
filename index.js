@@ -6,7 +6,8 @@
 var emitter = require('emitter')
   , classes = require('classes')
   , events = require('events')
-  , indexof = require('indexof');
+  , indexof = require('indexof')
+  , prop = require('prop');
 
 /**
  * export `Sortable`
@@ -46,7 +47,7 @@ Sortable.prototype.bind = function(e){
   this.events.bind('dragenter');
   this.events.bind('dragend');
   this.events.bind('drop');
-  prop(this.els, 'draggable', true);
+  prop.set(this.els, 'draggable', true);
   this.clone = this.els[0].cloneNode(false);
   classes(this.clone).add('sortable-placeholder');
   return this;
@@ -59,7 +60,7 @@ Sortable.prototype.bind = function(e){
  */
 
 Sortable.prototype.unbind = function(e){
-  prop(this.els, 'draggable', false);
+  prop.set(this.els, 'draggable', false);
   this.events.unbind();
   return this;
 };
@@ -186,20 +187,4 @@ Sortable.prototype.reset = function(){
 function remove(el){
   if (!el.parentNode) return;
   el.parentNode.removeChild(el);
-}
-
-/**
- * set `els` `prop` to `val`.
- *
- * TODO: separate component
- *
- * @param {NodeList} els
- * @param {String} prop
- * @param {Mixed} val
- */
-
-function prop(els, prop, val){
-  for (var i = 0, len = els.length; i < len; ++i) {
-    els[i][prop] = val
-  }
 }

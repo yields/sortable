@@ -3,17 +3,15 @@
   "repo": "yields/sortable",
   "description": "UI Sortable component.",
   "version": "0.1.2",
-  "keywords": ["draggable"],
+  "keywords": ["draggable", "sortable"],
   "dependencies": {
     "component/emitter": "*",
     "component/events": "*",
     "component/classes": "*",
+    "yields/prop": "*",
     "yields/indexof": "*"
   },
-  "development": {},
   "license": "MIT",
   "main": "index.js",
-  "scripts": [
-    "index.js"
-  ]
+  "scripts": ["index.js"]
 }
