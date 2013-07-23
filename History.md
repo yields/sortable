@@ -1,4 +1,11 @@
 
+0.2.0 / 2013-07-23
+==================
+
+ * add .demo
+ * use yields/prop
+ * clone shallow instead of deep
+
 0.1.2 / 2013-07-04
 ==================
 
