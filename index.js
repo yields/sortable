@@ -47,7 +47,7 @@ Sortable.prototype.bind = function(e){
   this.events.bind('dragend');
   this.events.bind('drop');
   prop(this.els, 'draggable', true);
-  this.clone = this.els[0].cloneNode(true);
+  this.clone = this.els[0].cloneNode(false);
   this.clone.innerHTML = '';
   classes(this.clone).add('sortable-placeholder');
   return this;
