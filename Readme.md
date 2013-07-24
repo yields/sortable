@@ -9,9 +9,17 @@
 
 ## API
 
-#### Sortable(el)   
+#### Sortable(el)
 
 Initialize Sortable with `el`.
+
+#### .ignore(selector)
+
+Ignore items matching the given `selector`.
+
+#### .handle(selector)
+
+Set the handle to `selector`.
 
 #### .bind()
 
