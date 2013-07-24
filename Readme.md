@@ -9,6 +9,12 @@
 
 ## API
 
+#### events
+
+  - `update`, emitted when sort changes happen.
+  - `start`(e), emitted when the drag starts.
+  - `drop`(e), emitted when drop happens.
+
 #### Sortable(el)
 
 Initialize Sortable with `el`.

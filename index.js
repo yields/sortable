@@ -222,7 +222,7 @@ Sortable.prototype.ondrop = function(e){
   e.stopPropagation();
   this.el.insertBefore(this.draggable, this.clone);
   this.ondragend(e);
-  this.emit('drop');
+  this.emit('drop', e);
   this.reset();
 };
 
