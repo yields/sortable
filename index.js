@@ -166,17 +166,18 @@ Sortable.prototype.ondragstart = function(e){
 Sortable.prototype.ondragenter =
 Sortable.prototype.ondragover = function(e){
   var el = e.target
-    , next = el
+    , next
     , ci
     , i;
 
-  if (!this.draggable || el == this.el) return;
   e.preventDefault();
+  if (!this.draggable || el == this.el) return;
   e.dataTransfer.dropEffect = 'move';
   this.draggable.style.display = 'none';
 
   // parent
   while (el.parentElement != this.el) el = el.parentElement;
+  next = el;
   ci = indexof(this.clone);
   i = indexof(el);
   if (ci < i) next = el.nextElementSibling;
