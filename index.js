@@ -171,6 +171,7 @@ Sortable.prototype.ondragover = function(e){
     , i;
 
   if (!this.draggable || el == this.el) return;
+  e.preventDefault();
   e.dataTransfer.dropEffect = 'move';
   this.draggable.style.display = 'none';
 
