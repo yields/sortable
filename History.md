@@ -1,4 +1,11 @@
 
+0.3.0 / 2013-07-24
+==================
+
+ * add [disabled] example
+ * better docs
+ * add .handle(), .ignore(), closes #3 and #2
+
 0.2.0 / 2013-07-23
 ==================
 
