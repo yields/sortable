@@ -195,939 +195,1053 @@ require.relative = function(parent) {
 
   return localRequire;
 };
-require.register("component-indexof/index.js", Function("exports, require, module",
-"\n\
-var indexOf = [].indexOf;\n\
-\n\
-module.exports = function(arr, obj){\n\
-  if (indexOf) return arr.indexOf(obj);\n\
-  for (var i = 0; i < arr.length; ++i) {\n\
-    if (arr[i] === obj) return i;\n\
-  }\n\
-  return -1;\n\
-};//@ sourceURL=component-indexof/index.js"
-));
-require.register("component-emitter/index.js", Function("exports, require, module",
-"\n\
-/**\n\
- * Module dependencies.\n\
- */\n\
-\n\
-var index = require('indexof');\n\
-\n\
-/**\n\
- * Expose `Emitter`.\n\
- */\n\
-\n\
-module.exports = Emitter;\n\
-\n\
-/**\n\
- * Initialize a new `Emitter`.\n\
- *\n\
- * @api public\n\
- */\n\
-\n\
-function Emitter(obj) {\n\
-  if (obj) return mixin(obj);\n\
-};\n\
-\n\
-/**\n\
- * Mixin the emitter properties.\n\
- *\n\
- * @param {Object} obj\n\
- * @return {Object}\n\
- * @api private\n\
- */\n\
-\n\
-function mixin(obj) {\n\
-  for (var key in Emitter.prototype) {\n\
-    obj[key] = Emitter.prototype[key];\n\
-  }\n\
-  return obj;\n\
-}\n\
-\n\
-/**\n\
- * Listen on the given `event` with `fn`.\n\
- *\n\
- * @param {String} event\n\
- * @param {Function} fn\n\
- * @return {Emitter}\n\
- * @api public\n\
- */\n\
-\n\
-Emitter.prototype.on = function(event, fn){\n\
-  this._callbacks = this._callbacks || {};\n\
-  (this._callbacks[event] = this._callbacks[event] || [])\n\
-    .push(fn);\n\
-  return this;\n\
-};\n\
-\n\
-/**\n\
- * Adds an `event` listener that will be invoked a single\n\
- * time then automatically removed.\n\
- *\n\
- * @param {String} event\n\
- * @param {Function} fn\n\
- * @return {Emitter}\n\
- * @api public\n\
- */\n\
-\n\
-Emitter.prototype.once = function(event, fn){\n\
-  var self = this;\n\
-  this._callbacks = this._callbacks || {};\n\
-\n\
-  function on() {\n\
-    self.off(event, on);\n\
-    fn.apply(this, arguments);\n\
-  }\n\
-\n\
-  fn._off = on;\n\
-  this.on(event, on);\n\
-  return this;\n\
-};\n\
-\n\
-/**\n\
- * Remove the given callback for `event` or all\n\
- * registered callbacks.\n\
- *\n\
- * @param {String} event\n\
- * @param {Function} fn\n\
- * @return {Emitter}\n\
- * @api public\n\
- */\n\
-\n\
-Emitter.prototype.off =\n\
-Emitter.prototype.removeListener =\n\
-Emitter.prototype.removeAllListeners = function(event, fn){\n\
-  this._callbacks = this._callbacks || {};\n\
-\n\
-  // all\n\
-  if (0 == arguments.length) {\n\
-    this._callbacks = {};\n\
-    return this;\n\
-  }\n\
-\n\
-  // specific event\n\
-  var callbacks = this._callbacks[event];\n\
-  if (!callbacks) return this;\n\
-\n\
-  // remove all handlers\n\
-  if (1 == arguments.length) {\n\
-    delete this._callbacks[event];\n\
-    return this;\n\
-  }\n\
-\n\
-  // remove specific handler\n\
-  var i = index(callbacks, fn._off || fn);\n\
-  if (~i) callbacks.splice(i, 1);\n\
-  return this;\n\
-};\n\
-\n\
-/**\n\
- * Emit `event` with the given args.\n\
- *\n\
- * @param {String} event\n\
- * @param {Mixed} ...\n\
- * @return {Emitter}\n\
- */\n\
-\n\
-Emitter.prototype.emit = function(event){\n\
-  this._callbacks = this._callbacks || {};\n\
-  var args = [].slice.call(arguments, 1)\n\
-    , callbacks = this._callbacks[event];\n\
-\n\
-  if (callbacks) {\n\
-    callbacks = callbacks.slice(0);\n\
-    for (var i = 0, len = callbacks.length; i < len; ++i) {\n\
-      callbacks[i].apply(this, args);\n\
-    }\n\
-  }\n\
-\n\
-  return this;\n\
-};\n\
-\n\
-/**\n\
- * Return array of callbacks for `event`.\n\
- *\n\
- * @param {String} event\n\
- * @return {Array}\n\
- * @api public\n\
- */\n\
-\n\
-Emitter.prototype.listeners = function(event){\n\
-  this._callbacks = this._callbacks || {};\n\
-  return this._callbacks[event] || [];\n\
-};\n\
-\n\
-/**\n\
- * Check if this emitter has `event` handlers.\n\
- *\n\
- * @param {String} event\n\
- * @return {Boolean}\n\
- * @api public\n\
- */\n\
-\n\
-Emitter.prototype.hasListeners = function(event){\n\
-  return !! this.listeners(event).length;\n\
-};\n\
-//@ sourceURL=component-emitter/index.js"
-));
-require.register("component-event/index.js", Function("exports, require, module",
-"\n\
-/**\n\
- * Bind `el` event `type` to `fn`.\n\
- *\n\
- * @param {Element} el\n\
- * @param {String} type\n\
- * @param {Function} fn\n\
- * @param {Boolean} capture\n\
- * @return {Function}\n\
- * @api public\n\
- */\n\
-\n\
-exports.bind = function(el, type, fn, capture){\n\
-  if (el.addEventListener) {\n\
-    el.addEventListener(type, fn, capture);\n\
-  } else {\n\
-    el.attachEvent('on' + type, fn);\n\
-  }\n\
-  return fn;\n\
-};\n\
-\n\
-/**\n\
- * Unbind `el` event `type`'s callback `fn`.\n\
- *\n\
- * @param {Element} el\n\
- * @param {String} type\n\
- * @param {Function} fn\n\
- * @param {Boolean} capture\n\
- * @return {Function}\n\
- * @api public\n\
- */\n\
-\n\
-exports.unbind = function(el, type, fn, capture){\n\
-  if (el.removeEventListener) {\n\
-    el.removeEventListener(type, fn, capture);\n\
-  } else {\n\
-    el.detachEvent('on' + type, fn);\n\
-  }\n\
-  return fn;\n\
-};\n\
-//@ sourceURL=component-event/index.js"
-));
-require.register("component-query/index.js", Function("exports, require, module",
-"\n\
-function one(selector, el) {\n\
-  return el.querySelector(selector);\n\
-}\n\
-\n\
-exports = module.exports = function(selector, el){\n\
-  el = el || document;\n\
-  return one(selector, el);\n\
-};\n\
-\n\
-exports.all = function(selector, el){\n\
-  el = el || document;\n\
-  return el.querySelectorAll(selector);\n\
-};\n\
-\n\
-exports.engine = function(obj){\n\
-  if (!obj.one) throw new Error('.one callback required');\n\
-  if (!obj.all) throw new Error('.all callback required');\n\
-  one = obj.one;\n\
-  exports.all = obj.all;\n\
-};\n\
-//@ sourceURL=component-query/index.js"
-));
-require.register("component-matches-selector/index.js", Function("exports, require, module",
-"/**\n\
- * Module dependencies.\n\
- */\n\
-\n\
-var query = require('query');\n\
-\n\
-/**\n\
- * Element prototype.\n\
- */\n\
-\n\
-var proto = Element.prototype;\n\
-\n\
-/**\n\
- * Vendor function.\n\
- */\n\
-\n\
-var vendor = proto.matchesSelector\n\
-  || proto.webkitMatchesSelector\n\
-  || proto.mozMatchesSelector\n\
-  || proto.msMatchesSelector\n\
-  || proto.oMatchesSelector;\n\
-\n\
-/**\n\
- * Expose `match()`.\n\
- */\n\
-\n\
-module.exports = match;\n\
-\n\
-/**\n\
- * Match `el` to `selector`.\n\
- *\n\
- * @param {Element} el\n\
- * @param {String} selector\n\
- * @return {Boolean}\n\
- * @api public\n\
- */\n\
-\n\
-function match(el, selector) {\n\
-  if (vendor) return vendor.call(el, selector);\n\
-  var nodes = query.all(selector, el.parentNode);\n\
-  for (var i = 0; i < nodes.length; ++i) {\n\
-    if (nodes[i] == el) return true;\n\
-  }\n\
-  return false;\n\
-}\n\
-//@ sourceURL=component-matches-selector/index.js"
-));
-require.register("component-delegate/index.js", Function("exports, require, module",
-"\n\
-/**\n\
- * Module dependencies.\n\
- */\n\
-\n\
-var matches = require('matches-selector')\n\
-  , event = require('event');\n\
-\n\
-/**\n\
- * Delegate event `type` to `selector`\n\
- * and invoke `fn(e)`. A callback function\n\
- * is returned which may be passed to `.unbind()`.\n\
- *\n\
- * @param {Element} el\n\
- * @param {String} selector\n\
- * @param {String} type\n\
- * @param {Function} fn\n\
- * @param {Boolean} capture\n\
- * @return {Function}\n\
- * @api public\n\
- */\n\
-\n\
-exports.bind = function(el, selector, type, fn, capture){\n\
-  return event.bind(el, type, function(e){\n\
-    if (matches(e.target, selector)) fn(e);\n\
-  }, capture);\n\
-  return callback;\n\
-};\n\
-\n\
-/**\n\
- * Unbind event `type`'s callback `fn`.\n\
- *\n\
- * @param {Element} el\n\
- * @param {String} type\n\
- * @param {Function} fn\n\
- * @param {Boolean} capture\n\
- * @api public\n\
- */\n\
-\n\
-exports.unbind = function(el, type, fn, capture){\n\
-  event.unbind(el, type, fn, capture);\n\
-};\n\
-//@ sourceURL=component-delegate/index.js"
-));
-require.register("component-events/index.js", Function("exports, require, module",
-"\n\
-/**\n\
- * Module dependencies.\n\
- */\n\
-\n\
-var events = require('event');\n\
-var delegate = require('delegate');\n\
-\n\
-/**\n\
- * Expose `Events`.\n\
- */\n\
-\n\
-module.exports = Events;\n\
-\n\
-/**\n\
- * Initialize an `Events` with the given\n\
- * `el` object which events will be bound to,\n\
- * and the `obj` which will receive method calls.\n\
- *\n\
- * @param {Object} el\n\
- * @param {Object} obj\n\
- * @api public\n\
- */\n\
-\n\
-function Events(el, obj) {\n\
-  if (!(this instanceof Events)) return new Events(el, obj);\n\
-  if (!el) throw new Error('element required');\n\
-  if (!obj) throw new Error('object required');\n\
-  this.el = el;\n\
-  this.obj = obj;\n\
-  this._events = {};\n\
-}\n\
-\n\
-/**\n\
- * Subscription helper.\n\
- */\n\
-\n\
-Events.prototype.sub = function(event, method, cb){\n\
-  this._events[event] = this._events[event] || {};\n\
-  this._events[event][method] = cb;\n\
-};\n\
-\n\
-/**\n\
- * Bind to `event` with optional `method` name.\n\
- * When `method` is undefined it becomes `event`\n\
- * with the \"on\" prefix.\n\
- *\n\
- * Examples:\n\
- *\n\
- *  Direct event handling:\n\
- *\n\
- *    events.bind('click') // implies \"onclick\"\n\
- *    events.bind('click', 'remove')\n\
- *    events.bind('click', 'sort', 'asc')\n\
- *\n\
- *  Delegated event handling:\n\
- *\n\
- *    events.bind('click li > a')\n\
- *    events.bind('click li > a', 'remove')\n\
- *    events.bind('click a.sort-ascending', 'sort', 'asc')\n\
- *    events.bind('click a.sort-descending', 'sort', 'desc')\n\
- *\n\
- * @param {String} event\n\
- * @param {String|function} [method]\n\
- * @return {Function} callback\n\
- * @api public\n\
- */\n\
-\n\
-Events.prototype.bind = function(event, method){\n\
-  var e = parse(event);\n\
-  var el = this.el;\n\
-  var obj = this.obj;\n\
-  var name = e.name;\n\
-  var method = method || 'on' + name;\n\
-  var args = [].slice.call(arguments, 2);\n\
-\n\
-  // callback\n\
-  function cb(){\n\
-    var a = [].slice.call(arguments).concat(args);\n\
-    obj[method].apply(obj, a);\n\
-  }\n\
-\n\
-  // bind\n\
-  if (e.selector) {\n\
-    cb = delegate.bind(el, e.selector, name, cb);\n\
-  } else {\n\
-    events.bind(el, name, cb);\n\
-  }\n\
-\n\
-  // subscription for unbinding\n\
-  this.sub(name, method, cb);\n\
-\n\
-  return cb;\n\
-};\n\
-\n\
-/**\n\
- * Unbind a single binding, all bindings for `event`,\n\
- * or all bindings within the manager.\n\
- *\n\
- * Examples:\n\
- *\n\
- *  Unbind direct handlers:\n\
- *\n\
- *     events.unbind('click', 'remove')\n\
- *     events.unbind('click')\n\
- *     events.unbind()\n\
- *\n\
- * Unbind delegate handlers:\n\
- *\n\
- *     events.unbind('click', 'remove')\n\
- *     events.unbind('click')\n\
- *     events.unbind()\n\
- *\n\
- * @param {String|Function} [event]\n\
- * @param {String|Function} [method]\n\
- * @api public\n\
- */\n\
-\n\
-Events.prototype.unbind = function(event, method){\n\
-  if (0 == arguments.length) return this.unbindAll();\n\
-  if (1 == arguments.length) return this.unbindAllOf(event);\n\
-\n\
-  // no bindings for this event\n\
-  var bindings = this._events[event];\n\
-  if (!bindings) return;\n\
-\n\
-  // no bindings for this method\n\
-  var cb = bindings[method];\n\
-  if (!cb) return;\n\
-\n\
-  events.unbind(this.el, event, cb);\n\
-};\n\
-\n\
-/**\n\
- * Unbind all events.\n\
- *\n\
- * @api private\n\
- */\n\
-\n\
-Events.prototype.unbindAll = function(){\n\
-  for (var event in this._events) {\n\
-    this.unbindAllOf(event);\n\
-  }\n\
-};\n\
-\n\
-/**\n\
- * Unbind all events for `event`.\n\
- *\n\
- * @param {String} event\n\
- * @api private\n\
- */\n\
-\n\
-Events.prototype.unbindAllOf = function(event){\n\
-  var bindings = this._events[event];\n\
-  if (!bindings) return;\n\
-\n\
-  for (var method in bindings) {\n\
-    this.unbind(event, method);\n\
-  }\n\
-};\n\
-\n\
-/**\n\
- * Parse `event`.\n\
- *\n\
- * @param {String} event\n\
- * @return {Object}\n\
- * @api private\n\
- */\n\
-\n\
-function parse(event) {\n\
-  var parts = event.split(/ +/);\n\
-  return {\n\
-    name: parts.shift(),\n\
-    selector: parts.join(' ')\n\
-  }\n\
-}\n\
-//@ sourceURL=component-events/index.js"
-));
-require.register("component-classes/index.js", Function("exports, require, module",
-"/**\n\
- * Module dependencies.\n\
- */\n\
-\n\
-var index = require('indexof');\n\
-\n\
-/**\n\
- * Whitespace regexp.\n\
- */\n\
-\n\
-var re = /\\s+/;\n\
-\n\
-/**\n\
- * toString reference.\n\
- */\n\
-\n\
-var toString = Object.prototype.toString;\n\
-\n\
-/**\n\
- * Wrap `el` in a `ClassList`.\n\
- *\n\
- * @param {Element} el\n\
- * @return {ClassList}\n\
- * @api public\n\
- */\n\
-\n\
-module.exports = function(el){\n\
-  return new ClassList(el);\n\
-};\n\
-\n\
-/**\n\
- * Initialize a new ClassList for `el`.\n\
- *\n\
- * @param {Element} el\n\
- * @api private\n\
- */\n\
-\n\
-function ClassList(el) {\n\
-  if (!el) throw new Error('A DOM element reference is required');\n\
-  this.el = el;\n\
-  this.list = el.classList;\n\
-}\n\
-\n\
-/**\n\
- * Add class `name` if not already present.\n\
- *\n\
- * @param {String} name\n\
- * @return {ClassList}\n\
- * @api public\n\
- */\n\
-\n\
-ClassList.prototype.add = function(name){\n\
-  // classList\n\
-  if (this.list) {\n\
-    this.list.add(name);\n\
-    return this;\n\
-  }\n\
-\n\
-  // fallback\n\
-  var arr = this.array();\n\
-  var i = index(arr, name);\n\
-  if (!~i) arr.push(name);\n\
-  this.el.className = arr.join(' ');\n\
-  return this;\n\
-};\n\
-\n\
-/**\n\
- * Remove class `name` when present, or\n\
- * pass a regular expression to remove\n\
- * any which match.\n\
- *\n\
- * @param {String|RegExp} name\n\
- * @return {ClassList}\n\
- * @api public\n\
- */\n\
-\n\
-ClassList.prototype.remove = function(name){\n\
-  if ('[object RegExp]' == toString.call(name)) {\n\
-    return this.removeMatching(name);\n\
-  }\n\
-\n\
-  // classList\n\
-  if (this.list) {\n\
-    this.list.remove(name);\n\
-    return this;\n\
-  }\n\
-\n\
-  // fallback\n\
-  var arr = this.array();\n\
-  var i = index(arr, name);\n\
-  if (~i) arr.splice(i, 1);\n\
-  this.el.className = arr.join(' ');\n\
-  return this;\n\
-};\n\
-\n\
-/**\n\
- * Remove all classes matching `re`.\n\
- *\n\
- * @param {RegExp} re\n\
- * @return {ClassList}\n\
- * @api private\n\
- */\n\
-\n\
-ClassList.prototype.removeMatching = function(re){\n\
-  var arr = this.array();\n\
-  for (var i = 0; i < arr.length; i++) {\n\
-    if (re.test(arr[i])) {\n\
-      this.remove(arr[i]);\n\
-    }\n\
-  }\n\
-  return this;\n\
-};\n\
-\n\
-/**\n\
- * Toggle class `name`.\n\
- *\n\
- * @param {String} name\n\
- * @return {ClassList}\n\
- * @api public\n\
- */\n\
-\n\
-ClassList.prototype.toggle = function(name){\n\
-  // classList\n\
-  if (this.list) {\n\
-    this.list.toggle(name);\n\
-    return this;\n\
-  }\n\
-\n\
-  // fallback\n\
-  if (this.has(name)) {\n\
-    this.remove(name);\n\
-  } else {\n\
-    this.add(name);\n\
-  }\n\
-  return this;\n\
-};\n\
-\n\
-/**\n\
- * Return an array of classes.\n\
- *\n\
- * @return {Array}\n\
- * @api public\n\
- */\n\
-\n\
-ClassList.prototype.array = function(){\n\
-  var str = this.el.className.replace(/^\\s+|\\s+$/g, '');\n\
-  var arr = str.split(re);\n\
-  if ('' === arr[0]) arr.shift();\n\
-  return arr;\n\
-};\n\
-\n\
-/**\n\
- * Check if class `name` is present.\n\
- *\n\
- * @param {String} name\n\
- * @return {ClassList}\n\
- * @api public\n\
- */\n\
-\n\
-ClassList.prototype.has =\n\
-ClassList.prototype.contains = function(name){\n\
-  return this.list\n\
-    ? this.list.contains(name)\n\
-    : !! ~index(this.array(), name);\n\
-};\n\
-//@ sourceURL=component-classes/index.js"
-));
-require.register("yields-indexof/index.js", Function("exports, require, module",
-"\n\
-/**\n\
- * indexof\n\
- */\n\
-\n\
-var indexof = [].indexOf;\n\
-\n\
-/**\n\
- * Get the index of the given `el`.\n\
- *\n\
- * @param {Element} el\n\
- * @return {Number}\n\
- */\n\
-\n\
-module.exports = function(el){\n\
-  if (!el.parentNode) return -1;\n\
-\n\
-  var list = el.parentNode.children\n\
-    , len = list.length;\n\
-\n\
-  if (indexof) return indexof.call(list, el);\n\
-  for (var i = 0; i < len; ++i) {\n\
-    if (el == list[i]) return i;\n\
-  }\n\
-  return -1;\n\
-};\n\
-//@ sourceURL=yields-indexof/index.js"
-));
-require.register("sortable/index.js", Function("exports, require, module",
-"\n\
-/**\n\
- * dependencies\n\
- */\n\
-\n\
-var emitter = require('emitter')\n\
-  , classes = require('classes')\n\
-  , events = require('events')\n\
-  , indexof = require('indexof');\n\
-\n\
-/**\n\
- * export `Sortable`\n\
- */\n\
-\n\
-module.exports = Sortable;\n\
-\n\
-/**\n\
- * Initialize `Sortable` with `el`.\n\
- *\n\
- * @param {Element} el\n\
- */\n\
-\n\
-function Sortable(el){\n\
-  if (!(this instanceof Sortable)) return new Sortable(el);\n\
-  if (!el) throw new TypeError('sortable(): expects an element');\n\
-  this.events = events(el, this);\n\
-  this.els = el.children;\n\
-  this.el = el;\n\
-}\n\
-\n\
-/**\n\
- * mixins.\n\
- */\n\
-\n\
-emitter(Sortable.prototype);\n\
-\n\
-/**\n\
- * bind internal events.\n\
- *\n\
- * @return {Sortable}\n\
- */\n\
-\n\
-Sortable.prototype.bind = function(e){\n\
-  this.events.bind('dragstart');\n\
-  this.events.bind('dragover');\n\
-  this.events.bind('dragenter');\n\
-  this.events.bind('dragend');\n\
-  this.events.bind('drop');\n\
-  prop(this.els, 'draggable', true);\n\
-  this.clone = this.els[0].cloneNode(true);\n\
-  this.clone.innerHTML = '';\n\
-  classes(this.clone).add('sortable-placeholder');\n\
-  return this;\n\
-};\n\
-\n\
-/**\n\
- * unbind internal events.\n\
- *\n\
- * @return {Sortable}\n\
- */\n\
-\n\
-Sortable.prototype.unbind = function(e){\n\
-  prop(this.els, 'draggable', false);\n\
-  this.events.unbind();\n\
-  return this;\n\
-};\n\
-\n\
-/**\n\
- * Connect the given `sortable`.\n\
- *\n\
- * once connected you can drag elements from\n\
- * the given sortable to this sortable.\n\
- *\n\
- * Example:\n\
- *\n\
- *      one <> two\n\
- *\n\
- *      one\n\
- *      .connect(two)\n\
- *      .connect(one);\n\
- *\n\
- *      two > one\n\
- *\n\
- *      one\n\
- *      .connect(two)\n\
- *\n\
- *      one > two > three\n\
- *\n\
- *      three\n\
- *      .connect(two)\n\
- *      .connect(one);\n\
- *\n\
- * @param {Sortable} sortable\n\
- * @return {Sortable} the given sortable.\n\
- */\n\
-\n\
-Sortable.prototype.connect = function(sortable){\n\
-  var self = this;\n\
-  this.on('drop', this.reset.bind(sortable));\n\
-  return sortable.on('start', function(){\n\
-    self.draggable = sortable.draggable;\n\
-    self.clone = sortable.clone;\n\
-    self.display = sortable.display;\n\
-    self.i = sortable.i;\n\
-  });\n\
-};\n\
-\n\
-/**\n\
- * on-dragstart\n\
- */\n\
-\n\
-Sortable.prototype.ondragstart = function(e){\n\
-  this.draggable = e.target;\n\
-  this.display = window.getComputedStyle(e.target).display;\n\
-  this.i = indexof(e.target);\n\
-  e.dataTransfer.setData('text', ' ');\n\
-  e.dataTransfer.effectAllowed = 'move';\n\
-  classes(e.target).add('dragging');\n\
-  this.emit('start', e);\n\
-};\n\
-\n\
-/**\n\
- * on-dragover\n\
- * on-dragenter\n\
- */\n\
-\n\
-Sortable.prototype.ondragenter =\n\
-Sortable.prototype.ondragover = function(e){\n\
-  e.preventDefault();\n\
-  if (!this.draggable) return;\n\
-  if (e.target == this.el) return;\n\
-  e.dataTransfer.dropEffect = 'move';\n\
-  this.draggable.style.display = 'none';\n\
-  var el = e.target;\n\
-  while (el.parentElement != this.el) el = el.parentElement;\n\
-  var ci = indexof(this.clone);\n\
-  var i = indexof(el);\n\
-  if (ci < i) el = el.nextSibling;\n\
-  this.el.insertBefore(this.clone, el);\n\
-};\n\
-\n\
-/**\n\
- * on-dragend\n\
- */\n\
-\n\
-Sortable.prototype.ondragend = function(e){\n\
-  if (!this.draggable) return;\n\
-  if (this.clone) remove(this.clone);\n\
-  this.draggable.style.display = this.display;\n\
-  classes(this.draggable).remove('dragging');\n\
-  if (this.i == indexof(this.draggable)) return;\n\
-  this.emit('update');\n\
-};\n\
-\n\
-/**\n\
- * on-drop\n\
- */\n\
-\n\
-Sortable.prototype.ondrop = function(e){\n\
-  e.stopPropagation();\n\
-  this.el.insertBefore(this.draggable, this.clone);\n\
-  this.ondragend(e);\n\
-  this.emit('drop');\n\
-  this.reset();\n\
-};\n\
-\n\
-/**\n\
- * Reset sortable.\n\
- *\n\
- * @api private\n\
- * @return {Sortable}\n\
- */\n\
-\n\
-Sortable.prototype.reset = function(){\n\
-  this.draggable = null;\n\
-  this.display = null;\n\
-  this.i = null;\n\
-};\n\
-\n\
-/**\n\
- * Remove the given `el`.\n\
- *\n\
- * @param {Element} el\n\
- * @return {Element}\n\
- */\n\
-\n\
-function remove(el){\n\
-  if (!el.parentNode) return;\n\
-  el.parentNode.removeChild(el);\n\
-}\n\
-\n\
-/**\n\
- * set `els` `prop` to `val`.\n\
- *\n\
- * TODO: separate component\n\
- *\n\
- * @param {NodeList} els\n\
- * @param {String} prop\n\
- * @param {Mixed} val\n\
- */\n\
-\n\
-function prop(els, prop, val){\n\
-  for (var i = 0, len = els.length; i < len; ++i) {\n\
-    els[i][prop] = val\n\
-  }\n\
-}\n\
-//@ sourceURL=sortable/index.js"
-));
+require.register("component-query/index.js", function(exports, require, module){
+
+function one(selector, el) {
+  return el.querySelector(selector);
+}
+
+exports = module.exports = function(selector, el){
+  el = el || document;
+  return one(selector, el);
+};
+
+exports.all = function(selector, el){
+  el = el || document;
+  return el.querySelectorAll(selector);
+};
+
+exports.engine = function(obj){
+  if (!obj.one) throw new Error('.one callback required');
+  if (!obj.all) throw new Error('.all callback required');
+  one = obj.one;
+  exports.all = obj.all;
+};
+
+});
+require.register("component-matches-selector/index.js", function(exports, require, module){
+/**
+ * Module dependencies.
+ */
+
+var query = require('query');
+
+/**
+ * Element prototype.
+ */
+
+var proto = Element.prototype;
+
+/**
+ * Vendor function.
+ */
+
+var vendor = proto.matchesSelector
+  || proto.webkitMatchesSelector
+  || proto.mozMatchesSelector
+  || proto.msMatchesSelector
+  || proto.oMatchesSelector;
+
+/**
+ * Expose `match()`.
+ */
+
+module.exports = match;
+
+/**
+ * Match `el` to `selector`.
+ *
+ * @param {Element} el
+ * @param {String} selector
+ * @return {Boolean}
+ * @api public
+ */
+
+function match(el, selector) {
+  if (vendor) return vendor.call(el, selector);
+  var nodes = query.all(selector, el.parentNode);
+  for (var i = 0; i < nodes.length; ++i) {
+    if (nodes[i] == el) return true;
+  }
+  return false;
+}
+
+});
+require.register("component-indexof/index.js", function(exports, require, module){
+
+var indexOf = [].indexOf;
+
+module.exports = function(arr, obj){
+  if (indexOf) return arr.indexOf(obj);
+  for (var i = 0; i < arr.length; ++i) {
+    if (arr[i] === obj) return i;
+  }
+  return -1;
+};
+});
+require.register("component-emitter/index.js", function(exports, require, module){
+
+/**
+ * Module dependencies.
+ */
+
+var index = require('indexof');
+
+/**
+ * Expose `Emitter`.
+ */
+
+module.exports = Emitter;
+
+/**
+ * Initialize a new `Emitter`.
+ *
+ * @api public
+ */
+
+function Emitter(obj) {
+  if (obj) return mixin(obj);
+};
+
+/**
+ * Mixin the emitter properties.
+ *
+ * @param {Object} obj
+ * @return {Object}
+ * @api private
+ */
+
+function mixin(obj) {
+  for (var key in Emitter.prototype) {
+    obj[key] = Emitter.prototype[key];
+  }
+  return obj;
+}
+
+/**
+ * Listen on the given `event` with `fn`.
+ *
+ * @param {String} event
+ * @param {Function} fn
+ * @return {Emitter}
+ * @api public
+ */
+
+Emitter.prototype.on = function(event, fn){
+  this._callbacks = this._callbacks || {};
+  (this._callbacks[event] = this._callbacks[event] || [])
+    .push(fn);
+  return this;
+};
+
+/**
+ * Adds an `event` listener that will be invoked a single
+ * time then automatically removed.
+ *
+ * @param {String} event
+ * @param {Function} fn
+ * @return {Emitter}
+ * @api public
+ */
+
+Emitter.prototype.once = function(event, fn){
+  var self = this;
+  this._callbacks = this._callbacks || {};
+
+  function on() {
+    self.off(event, on);
+    fn.apply(this, arguments);
+  }
+
+  fn._off = on;
+  this.on(event, on);
+  return this;
+};
+
+/**
+ * Remove the given callback for `event` or all
+ * registered callbacks.
+ *
+ * @param {String} event
+ * @param {Function} fn
+ * @return {Emitter}
+ * @api public
+ */
+
+Emitter.prototype.off =
+Emitter.prototype.removeListener =
+Emitter.prototype.removeAllListeners = function(event, fn){
+  this._callbacks = this._callbacks || {};
+
+  // all
+  if (0 == arguments.length) {
+    this._callbacks = {};
+    return this;
+  }
+
+  // specific event
+  var callbacks = this._callbacks[event];
+  if (!callbacks) return this;
+
+  // remove all handlers
+  if (1 == arguments.length) {
+    delete this._callbacks[event];
+    return this;
+  }
+
+  // remove specific handler
+  var i = index(callbacks, fn._off || fn);
+  if (~i) callbacks.splice(i, 1);
+  return this;
+};
+
+/**
+ * Emit `event` with the given args.
+ *
+ * @param {String} event
+ * @param {Mixed} ...
+ * @return {Emitter}
+ */
+
+Emitter.prototype.emit = function(event){
+  this._callbacks = this._callbacks || {};
+  var args = [].slice.call(arguments, 1)
+    , callbacks = this._callbacks[event];
+
+  if (callbacks) {
+    callbacks = callbacks.slice(0);
+    for (var i = 0, len = callbacks.length; i < len; ++i) {
+      callbacks[i].apply(this, args);
+    }
+  }
+
+  return this;
+};
+
+/**
+ * Return array of callbacks for `event`.
+ *
+ * @param {String} event
+ * @return {Array}
+ * @api public
+ */
+
+Emitter.prototype.listeners = function(event){
+  this._callbacks = this._callbacks || {};
+  return this._callbacks[event] || [];
+};
+
+/**
+ * Check if this emitter has `event` handlers.
+ *
+ * @param {String} event
+ * @return {Boolean}
+ * @api public
+ */
+
+Emitter.prototype.hasListeners = function(event){
+  return !! this.listeners(event).length;
+};
+
+});
+require.register("component-event/index.js", function(exports, require, module){
+
+/**
+ * Bind `el` event `type` to `fn`.
+ *
+ * @param {Element} el
+ * @param {String} type
+ * @param {Function} fn
+ * @param {Boolean} capture
+ * @return {Function}
+ * @api public
+ */
+
+exports.bind = function(el, type, fn, capture){
+  if (el.addEventListener) {
+    el.addEventListener(type, fn, capture || false);
+  } else {
+    el.attachEvent('on' + type, fn);
+  }
+  return fn;
+};
+
+/**
+ * Unbind `el` event `type`'s callback `fn`.
+ *
+ * @param {Element} el
+ * @param {String} type
+ * @param {Function} fn
+ * @param {Boolean} capture
+ * @return {Function}
+ * @api public
+ */
+
+exports.unbind = function(el, type, fn, capture){
+  if (el.removeEventListener) {
+    el.removeEventListener(type, fn, capture || false);
+  } else {
+    el.detachEvent('on' + type, fn);
+  }
+  return fn;
+};
+
+});
+require.register("component-delegate/index.js", function(exports, require, module){
+
+/**
+ * Module dependencies.
+ */
+
+var matches = require('matches-selector')
+  , event = require('event');
+
+/**
+ * Delegate event `type` to `selector`
+ * and invoke `fn(e)`. A callback function
+ * is returned which may be passed to `.unbind()`.
+ *
+ * @param {Element} el
+ * @param {String} selector
+ * @param {String} type
+ * @param {Function} fn
+ * @param {Boolean} capture
+ * @return {Function}
+ * @api public
+ */
+
+exports.bind = function(el, selector, type, fn, capture){
+  return event.bind(el, type, function(e){
+    if (matches(e.target, selector)) fn(e);
+  }, capture);
+  return callback;
+};
+
+/**
+ * Unbind event `type`'s callback `fn`.
+ *
+ * @param {Element} el
+ * @param {String} type
+ * @param {Function} fn
+ * @param {Boolean} capture
+ * @api public
+ */
+
+exports.unbind = function(el, type, fn, capture){
+  event.unbind(el, type, fn, capture);
+};
+
+});
+require.register("component-events/index.js", function(exports, require, module){
+
+/**
+ * Module dependencies.
+ */
+
+var events = require('event');
+var delegate = require('delegate');
+
+/**
+ * Expose `Events`.
+ */
+
+module.exports = Events;
+
+/**
+ * Initialize an `Events` with the given
+ * `el` object which events will be bound to,
+ * and the `obj` which will receive method calls.
+ *
+ * @param {Object} el
+ * @param {Object} obj
+ * @api public
+ */
+
+function Events(el, obj) {
+  if (!(this instanceof Events)) return new Events(el, obj);
+  if (!el) throw new Error('element required');
+  if (!obj) throw new Error('object required');
+  this.el = el;
+  this.obj = obj;
+  this._events = {};
+}
+
+/**
+ * Subscription helper.
+ */
+
+Events.prototype.sub = function(event, method, cb){
+  this._events[event] = this._events[event] || {};
+  this._events[event][method] = cb;
+};
+
+/**
+ * Bind to `event` with optional `method` name.
+ * When `method` is undefined it becomes `event`
+ * with the "on" prefix.
+ *
+ * Examples:
+ *
+ *  Direct event handling:
+ *
+ *    events.bind('click') // implies "onclick"
+ *    events.bind('click', 'remove')
+ *    events.bind('click', 'sort', 'asc')
+ *
+ *  Delegated event handling:
+ *
+ *    events.bind('click li > a')
+ *    events.bind('click li > a', 'remove')
+ *    events.bind('click a.sort-ascending', 'sort', 'asc')
+ *    events.bind('click a.sort-descending', 'sort', 'desc')
+ *
+ * @param {String} event
+ * @param {String|function} [method]
+ * @return {Function} callback
+ * @api public
+ */
+
+Events.prototype.bind = function(event, method){
+  var e = parse(event);
+  var el = this.el;
+  var obj = this.obj;
+  var name = e.name;
+  var method = method || 'on' + name;
+  var args = [].slice.call(arguments, 2);
+
+  // callback
+  function cb(){
+    var a = [].slice.call(arguments).concat(args);
+    obj[method].apply(obj, a);
+  }
+
+  // bind
+  if (e.selector) {
+    cb = delegate.bind(el, e.selector, name, cb);
+  } else {
+    events.bind(el, name, cb);
+  }
+
+  // subscription for unbinding
+  this.sub(name, method, cb);
+
+  return cb;
+};
+
+/**
+ * Unbind a single binding, all bindings for `event`,
+ * or all bindings within the manager.
+ *
+ * Examples:
+ *
+ *  Unbind direct handlers:
+ *
+ *     events.unbind('click', 'remove')
+ *     events.unbind('click')
+ *     events.unbind()
+ *
+ * Unbind delegate handlers:
+ *
+ *     events.unbind('click', 'remove')
+ *     events.unbind('click')
+ *     events.unbind()
+ *
+ * @param {String|Function} [event]
+ * @param {String|Function} [method]
+ * @api public
+ */
+
+Events.prototype.unbind = function(event, method){
+  if (0 == arguments.length) return this.unbindAll();
+  if (1 == arguments.length) return this.unbindAllOf(event);
+
+  // no bindings for this event
+  var bindings = this._events[event];
+  if (!bindings) return;
+
+  // no bindings for this method
+  var cb = bindings[method];
+  if (!cb) return;
+
+  events.unbind(this.el, event, cb);
+};
+
+/**
+ * Unbind all events.
+ *
+ * @api private
+ */
+
+Events.prototype.unbindAll = function(){
+  for (var event in this._events) {
+    this.unbindAllOf(event);
+  }
+};
+
+/**
+ * Unbind all events for `event`.
+ *
+ * @param {String} event
+ * @api private
+ */
+
+Events.prototype.unbindAllOf = function(event){
+  var bindings = this._events[event];
+  if (!bindings) return;
+
+  for (var method in bindings) {
+    this.unbind(event, method);
+  }
+};
+
+/**
+ * Parse `event`.
+ *
+ * @param {String} event
+ * @return {Object}
+ * @api private
+ */
+
+function parse(event) {
+  var parts = event.split(/ +/);
+  return {
+    name: parts.shift(),
+    selector: parts.join(' ')
+  }
+}
+
+});
+require.register("component-classes/index.js", function(exports, require, module){
+/**
+ * Module dependencies.
+ */
+
+var index = require('indexof');
+
+/**
+ * Whitespace regexp.
+ */
+
+var re = /\s+/;
+
+/**
+ * toString reference.
+ */
+
+var toString = Object.prototype.toString;
+
+/**
+ * Wrap `el` in a `ClassList`.
+ *
+ * @param {Element} el
+ * @return {ClassList}
+ * @api public
+ */
+
+module.exports = function(el){
+  return new ClassList(el);
+};
+
+/**
+ * Initialize a new ClassList for `el`.
+ *
+ * @param {Element} el
+ * @api private
+ */
+
+function ClassList(el) {
+  if (!el) throw new Error('A DOM element reference is required');
+  this.el = el;
+  this.list = el.classList;
+}
+
+/**
+ * Add class `name` if not already present.
+ *
+ * @param {String} name
+ * @return {ClassList}
+ * @api public
+ */
+
+ClassList.prototype.add = function(name){
+  // classList
+  if (this.list) {
+    this.list.add(name);
+    return this;
+  }
+
+  // fallback
+  var arr = this.array();
+  var i = index(arr, name);
+  if (!~i) arr.push(name);
+  this.el.className = arr.join(' ');
+  return this;
+};
+
+/**
+ * Remove class `name` when present, or
+ * pass a regular expression to remove
+ * any which match.
+ *
+ * @param {String|RegExp} name
+ * @return {ClassList}
+ * @api public
+ */
+
+ClassList.prototype.remove = function(name){
+  if ('[object RegExp]' == toString.call(name)) {
+    return this.removeMatching(name);
+  }
+
+  // classList
+  if (this.list) {
+    this.list.remove(name);
+    return this;
+  }
+
+  // fallback
+  var arr = this.array();
+  var i = index(arr, name);
+  if (~i) arr.splice(i, 1);
+  this.el.className = arr.join(' ');
+  return this;
+};
+
+/**
+ * Remove all classes matching `re`.
+ *
+ * @param {RegExp} re
+ * @return {ClassList}
+ * @api private
+ */
+
+ClassList.prototype.removeMatching = function(re){
+  var arr = this.array();
+  for (var i = 0; i < arr.length; i++) {
+    if (re.test(arr[i])) {
+      this.remove(arr[i]);
+    }
+  }
+  return this;
+};
+
+/**
+ * Toggle class `name`.
+ *
+ * @param {String} name
+ * @return {ClassList}
+ * @api public
+ */
+
+ClassList.prototype.toggle = function(name){
+  // classList
+  if (this.list) {
+    this.list.toggle(name);
+    return this;
+  }
+
+  // fallback
+  if (this.has(name)) {
+    this.remove(name);
+  } else {
+    this.add(name);
+  }
+  return this;
+};
+
+/**
+ * Return an array of classes.
+ *
+ * @return {Array}
+ * @api public
+ */
+
+ClassList.prototype.array = function(){
+  var str = this.el.className.replace(/^\s+|\s+$/g, '');
+  var arr = str.split(re);
+  if ('' === arr[0]) arr.shift();
+  return arr;
+};
+
+/**
+ * Check if class `name` is present.
+ *
+ * @param {String} name
+ * @return {ClassList}
+ * @api public
+ */
+
+ClassList.prototype.has =
+ClassList.prototype.contains = function(name){
+  return this.list
+    ? this.list.contains(name)
+    : !! ~index(this.array(), name);
+};
+
+});
+require.register("yields-prop/index.js", function(exports, require, module){
+
+/**
+ * Set / Get properties of `Element` or `NodeList`.
+ *
+ * @param {Element|NodeList|Array} el
+ * @param {String} property
+ * @param {Mixed} val
+ * @return {Mixed}
+ */
+
+exports = module.exports = function(el, prop, val){
+  return 3 == arguments.length
+    ? exports.set(el, prop, val)
+    : exports.get(el, prop);
+};
+
+/**
+ * Set property of `el`.
+ *
+ * @param {Element|NodeList|Array} el
+ * @param {String} prop
+ * @param {Mixed} val
+ */
+
+exports.set = function(el, prop, val){
+  var els = null == el.length
+    ? [el]
+    : el;
+
+  for (var i = 0; i < els.length; ++i) {
+    els[i][prop] = val;
+  }
+
+  return els;
+}
+
+/**
+ * Get property of `el`.
+ *
+ * @param {Element|NodeList|Array} el
+ * @param {String} prop
+ */
+
+exports.get = function(el, prop){
+  var els = null == el.length
+    ? [el]
+    : el;
+
+  var ret = [];
+  for (var i = 0; i < els.length; ++i) {
+    ret.push(els[i][prop]);
+  }
+
+  return ret;
+}
+
+});
+require.register("yields-indexof/index.js", function(exports, require, module){
+
+/**
+ * indexof
+ */
+
+var indexof = [].indexOf;
+
+/**
+ * Get the index of the given `el`.
+ *
+ * @param {Element} el
+ * @return {Number}
+ */
+
+module.exports = function(el){
+  if (!el.parentNode) return -1;
+
+  var list = el.parentNode.children
+    , len = list.length;
+
+  if (indexof) return indexof.call(list, el);
+  for (var i = 0; i < len; ++i) {
+    if (el == list[i]) return i;
+  }
+  return -1;
+};
+
+});
+require.register("yields-sortable/index.js", function(exports, require, module){
+
+/**
+ * dependencies
+ */
+
+var matches = require('matches-selector')
+  , emitter = require('emitter')
+  , classes = require('classes')
+  , events = require('events')
+  , indexof = require('indexof')
+  , prop = require('prop');
+
+/**
+ * export `Sortable`
+ */
+
+module.exports = Sortable;
+
+/**
+ * Initialize `Sortable` with `el`.
+ *
+ * @param {Element} el
+ */
+
+function Sortable(el){
+  if (!(this instanceof Sortable)) return new Sortable(el);
+  if (!el) throw new TypeError('sortable(): expects an element');
+  this.events = events(el, this);
+  this.els = el.children;
+  this.el = el;
+}
+
+/**
+ * Mixins.
+ */
+
+emitter(Sortable.prototype);
+
+/**
+ * Ignore items that don't match `selector`.
+ *
+ * @param {String} selector
+ * @return {Sortable}
+ * @api public
+ */
+
+Sortable.prototype.ignore = function(selector){
+  this.ignored = selector;
+  return this;
+};
+
+/**
+ * Set handle to `selector`.
+ *
+ * @param {String} selector
+ * @return {Sortable}
+ * @api public
+ */
+
+Sortable.prototype.handle = function(selector){
+  this._handle = selector;
+  return this;
+};
+
+/**
+ * Bind internal events.
+ *
+ * @return {Sortable}
+ * @api public
+ */
+
+Sortable.prototype.bind = function(e){
+  this.events.bind('mousedown');
+  this.events.bind('dragstart');
+  this.events.bind('dragover');
+  this.events.bind('dragenter');
+  this.events.bind('dragend');
+  this.events.bind('drop');
+  prop.set(this.els, 'draggable', true);
+  this.clone = this.els[0].cloneNode(false);
+  classes(this.clone).add('sortable-placeholder');
+  return this;
+};
+
+/**
+ * Unbind internal events.
+ *
+ * @return {Sortable}
+ * @api public
+ */
+
+Sortable.prototype.unbind = function(e){
+  prop.set(this.els, 'draggable', false);
+  this.events.unbind();
+  return this;
+};
+
+/**
+ * Connect the given `sortable`.
+ *
+ * once connected you can drag elements from
+ * the given sortable to this sortable.
+ *
+ * Example:
+ *
+ *      one <> two
+ *
+ *      one
+ *      .connect(two)
+ *      .connect(one);
+ *
+ *      two > one
+ *
+ *      one
+ *      .connect(two)
+ *
+ *      one > two > three
+ *
+ *      three
+ *      .connect(two)
+ *      .connect(one);
+ *
+ * @param {Sortable} sortable
+ * @return {Sortable} the given sortable.
+ * @api public
+ */
+
+Sortable.prototype.connect = function(sortable){
+  var self = this;
+  this.on('drop', this.reset.bind(sortable));
+  return sortable.on('start', function(){
+    self.draggable = sortable.draggable;
+    self.clone = sortable.clone;
+    self.display = sortable.display;
+    self.i = sortable.i;
+  });
+};
+
+/**
+ * on-dragstart
+ *
+ * @param {Event} e
+ * @api private
+ */
+
+Sortable.prototype.ondragstart = function(e){
+  if (this.ignored && matches(e.target, this.ignored)) return e.preventDefault();
+  if (this._handle && !this.match) return e.preventDefault();
+  this.draggable = e.target;
+  this.display = window.getComputedStyle(e.target).display;
+  this.i = indexof(e.target);
+  e.dataTransfer.setData('text', ' ');
+  e.dataTransfer.effectAllowed = 'move';
+  classes(e.target).add('dragging');
+  this.emit('start', e);
+};
+
+/**
+ * on-dragover
+ * on-dragenter
+ *
+ * @param {Event} e
+ * @api private
+ */
+
+Sortable.prototype.ondragenter =
+Sortable.prototype.ondragover = function(e){
+  var el = e.target
+    , next
+    , ci
+    , i;
+
+  e.preventDefault();
+  if (!this.draggable || el == this.el) return;
+  e.dataTransfer.dropEffect = 'move';
+  this.draggable.style.display = 'none';
+
+  // parent
+  while (el.parentElement != this.el) el = el.parentElement;
+  next = el;
+  ci = indexof(this.clone);
+  i = indexof(el);
+  if (ci < i) next = el.nextElementSibling;
+  if (this.ignored && matches(el, this.ignored)) return;
+  this.el.insertBefore(this.clone, next);
+};
+
+/**
+ * on-mousedown.
+ *
+ * @param {Event} e
+ * @api private
+ */
+
+Sortable.prototype.onmousedown = function(e){
+  if (!this._handle) return;
+  this.match = matches(e.target, this._handle);
+};
+
+/**
+ * on-dragend
+ *
+ * @param {Event} e
+ * @api private
+ */
+
+Sortable.prototype.ondragend = function(e){
+  if (!this.draggable) return;
+  if (this.clone) remove(this.clone);
+  this.draggable.style.display = this.display;
+  classes(this.draggable).remove('dragging');
+  if (this.i == indexof(this.draggable)) return;
+  this.emit('update');
+};
+
+/**
+ * on-drop
+ *
+ * @param {Event} e
+ * @api private
+ */
+
+Sortable.prototype.ondrop = function(e){
+  e.stopPropagation();
+  this.el.insertBefore(this.draggable, this.clone);
+  this.ondragend(e);
+  this.emit('drop', e);
+  this.reset();
+};
+
+/**
+ * Reset sortable.
+ *
+ * @api private
+ * @return {Sortable}
+ * @api private
+ */
+
+Sortable.prototype.reset = function(){
+  this.draggable = null;
+  this.display = null;
+  this.i = null;
+};
+
+/**
+ * Remove the given `el`.
+ *
+ * @param {Element} el
+ * @return {Element}
+ * @api private
+ */
+
+function remove(el){
+  if (!el.parentNode) return;
+  el.parentNode.removeChild(el);
+}
+
+});
 
 
 
 
 
-require.alias("component-emitter/index.js", "sortable/deps/emitter/index.js");
-require.alias("component-emitter/index.js", "emitter/index.js");
+
+
+require.alias("yields-sortable/index.js", "sortable-example/deps/sortable/index.js");
+require.alias("yields-sortable/index.js", "sortable-example/deps/sortable/index.js");
+require.alias("yields-sortable/index.js", "sortable/index.js");
+require.alias("component-matches-selector/index.js", "yields-sortable/deps/matches-selector/index.js");
+require.alias("component-query/index.js", "component-matches-selector/deps/query/index.js");
+
+require.alias("component-emitter/index.js", "yields-sortable/deps/emitter/index.js");
 require.alias("component-indexof/index.js", "component-emitter/deps/indexof/index.js");
 
-require.alias("component-events/index.js", "sortable/deps/events/index.js");
-require.alias("component-events/index.js", "events/index.js");
+require.alias("component-events/index.js", "yields-sortable/deps/events/index.js");
 require.alias("component-event/index.js", "component-events/deps/event/index.js");
 
 require.alias("component-delegate/index.js", "component-events/deps/delegate/index.js");
@@ -1136,12 +1250,13 @@ require.alias("component-query/index.js", "component-matches-selector/deps/query
 
 require.alias("component-event/index.js", "component-delegate/deps/event/index.js");
 
-require.alias("component-classes/index.js", "sortable/deps/classes/index.js");
-require.alias("component-classes/index.js", "classes/index.js");
+require.alias("component-classes/index.js", "yields-sortable/deps/classes/index.js");
 require.alias("component-indexof/index.js", "component-classes/deps/indexof/index.js");
 
-require.alias("yields-indexof/index.js", "sortable/deps/indexof/index.js");
-require.alias("yields-indexof/index.js", "sortable/deps/indexof/index.js");
-require.alias("yields-indexof/index.js", "indexof/index.js");
+require.alias("yields-prop/index.js", "yields-sortable/deps/prop/index.js");
+require.alias("yields-prop/index.js", "yields-sortable/deps/prop/index.js");
+require.alias("yields-prop/index.js", "yields-prop/index.js");
+require.alias("yields-indexof/index.js", "yields-sortable/deps/indexof/index.js");
+require.alias("yields-indexof/index.js", "yields-sortable/deps/indexof/index.js");
 require.alias("yields-indexof/index.js", "yields-indexof/index.js");
-require.alias("sortable/index.js", "sortable/index.js");
+require.alias("yields-sortable/index.js", "yields-sortable/index.js");
