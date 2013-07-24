@@ -29,6 +29,14 @@
         height: 20px;
       }
 
+      li span {
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        background: #eee;
+        margin-right: 10px;
+      }
+
       .numbers {
         height: 200px;
       }
@@ -42,6 +50,10 @@
         text-align: center;
       }
 
+      [disabled] {
+        opacity: .5;
+      }
+
     </style>
   </head>
   <body>
@@ -52,6 +64,22 @@
       <li>Lua</li>
       <li>Google Go</li>
       <li>Julia</li>
+    </ul>
+
+    <h2>Disabled items</h2>
+    <ul class='languages'>
+      <li>Javascript</li>
+      <li>Lua</li>
+      <li>Google Go</li>
+      <li disabled>Julia</li>
+    </ul>
+
+    <h2>Handle</h2>
+    <ul class='handle'>
+      <li><span></span>Javascript</li>
+      <li><span></span>Lua</li>
+      <li><span></span>Google Go</li>
+      <li><span></span>Julia</li>
     </ul>
 
     <h2>Grid</h2>
@@ -79,12 +107,14 @@
 
     <script>
       var Sortable = require('sortable');
-      var els = document.querySelectorAll('.numbers, .languages');
+      var els = document.querySelectorAll('.numbers, .languages, .handle');
       var ul = document.querySelector('.one');
 
       // all
       [].slice.call(els).forEach(function(el){
         var sortable = new Sortable(el);
+        if ('handle' == el.className) sortable.handle('span');
+        sortable.ignore('[disabled]');
         sortable.bind();
       });
 

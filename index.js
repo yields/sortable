@@ -3,7 +3,8 @@
  * dependencies
  */
 
-var emitter = require('emitter')
+var matches = require('matches-selector')
+  , emitter = require('emitter')
   , classes = require('classes')
   , events = require('events')
   , indexof = require('indexof')
@@ -30,18 +31,46 @@ function Sortable(el){
 }
 
 /**
- * mixins.
+ * Mixins.
  */
 
 emitter(Sortable.prototype);
 
 /**
- * bind internal events.
+ * Ignore items that don't match `selector`.
+ *
+ * @param {String} selector
+ * @return {Sortable}
+ * @api public
+ */
+
+Sortable.prototype.ignore = function(selector){
+  this.ignored = selector;
+  return this;
+};
+
+/**
+ * Set handle to `selector`.
+ *
+ * @param {String} selector
+ * @return {Sortable}
+ * @api public
+ */
+
+Sortable.prototype.handle = function(selector){
+  this._handle = selector;
+  return this;
+};
+
+/**
+ * Bind internal events.
  *
  * @return {Sortable}
+ * @api public
  */
 
 Sortable.prototype.bind = function(e){
+  this.events.bind('mousedown');
   this.events.bind('dragstart');
   this.events.bind('dragover');
   this.events.bind('dragenter');
@@ -54,9 +83,10 @@ Sortable.prototype.bind = function(e){
 };
 
 /**
- * unbind internal events.
+ * Unbind internal events.
  *
  * @return {Sortable}
+ * @api public
  */
 
 Sortable.prototype.unbind = function(e){
@@ -92,6 +122,7 @@ Sortable.prototype.unbind = function(e){
  *
  * @param {Sortable} sortable
  * @return {Sortable} the given sortable.
+ * @api public
  */
 
 Sortable.prototype.connect = function(sortable){
@@ -107,9 +138,14 @@ Sortable.prototype.connect = function(sortable){
 
 /**
  * on-dragstart
+ *
+ * @param {Event} e
+ * @api private
  */
 
 Sortable.prototype.ondragstart = function(e){
+  if (this.ignored && matches(e.target, this.ignored)) return e.preventDefault();
+  if (this._handle && !this.match) return e.preventDefault();
   this.draggable = e.target;
   this.display = window.getComputedStyle(e.target).display;
   this.i = indexof(e.target);
@@ -122,25 +158,48 @@ Sortable.prototype.ondragstart = function(e){
 /**
  * on-dragover
  * on-dragenter
+ *
+ * @param {Event} e
+ * @api private
  */
 
 Sortable.prototype.ondragenter =
 Sortable.prototype.ondragover = function(e){
-  e.preventDefault();
-  if (!this.draggable) return;
-  if (e.target == this.el) return;
+  var el = e.target
+    , next = el
+    , ci
+    , i;
+
+  if (!this.draggable || el == this.el) return;
   e.dataTransfer.dropEffect = 'move';
   this.draggable.style.display = 'none';
-  var el = e.target;
+
+  // parent
   while (el.parentElement != this.el) el = el.parentElement;
-  var ci = indexof(this.clone);
-  var i = indexof(el);
-  if (ci < i) el = el.nextSibling;
-  this.el.insertBefore(this.clone, el);
+  ci = indexof(this.clone);
+  i = indexof(el);
+  if (ci < i) next = el.nextElementSibling;
+  if (this.ignored && matches(el, this.ignored)) return;
+  this.el.insertBefore(this.clone, next);
+};
+
+/**
+ * on-mousedown.
+ *
+ * @param {Event} e
+ * @api private
+ */
+
+Sortable.prototype.onmousedown = function(e){
+  if (!this._handle) return;
+  this.match = matches(e.target, this._handle);
 };
 
 /**
  * on-dragend
+ *
+ * @param {Event} e
+ * @api private
  */
 
 Sortable.prototype.ondragend = function(e){
@@ -154,6 +213,9 @@ Sortable.prototype.ondragend = function(e){
 
 /**
  * on-drop
+ *
+ * @param {Event} e
+ * @api private
  */
 
 Sortable.prototype.ondrop = function(e){
@@ -169,6 +231,7 @@ Sortable.prototype.ondrop = function(e){
  *
  * @api private
  * @return {Sortable}
+ * @api private
  */
 
 Sortable.prototype.reset = function(){
@@ -182,6 +245,7 @@ Sortable.prototype.reset = function(){
  *
  * @param {Element} el
  * @return {Element}
+ * @api private
  */
 
 function remove(el){
