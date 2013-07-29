@@ -10,7 +10,7 @@
     "component/emitter": "*",
     "component/events": "*",
     "component/classes": "*",
-    "yields/prop": "*",
+    "component/each": "*",
     "yields/indexof": "*"
   },
   "license": "MIT",

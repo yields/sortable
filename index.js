@@ -8,7 +8,7 @@ var matches = require('matches-selector')
   , classes = require('classes')
   , events = require('events')
   , indexof = require('indexof')
-  , prop = require('prop');
+  , each = require('each');
 
 /**
  * export `Sortable`
@@ -76,7 +76,7 @@ Sortable.prototype.bind = function(e){
   this.events.bind('dragenter');
   this.events.bind('dragend');
   this.events.bind('drop');
-  prop.set(this.els, 'draggable', true);
+  each(this.els, 'draggable = true');
   this.clone = this.els[0].cloneNode(false);
   classes(this.clone).add('sortable-placeholder');
   return this;
@@ -90,7 +90,7 @@ Sortable.prototype.bind = function(e){
  */
 
 Sortable.prototype.unbind = function(e){
-  prop.set(this.els, 'draggable', false);
+  each(this.els, 'draggable = false');
   this.events.unbind();
   return this;
 };
