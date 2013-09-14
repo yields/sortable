@@ -6,11 +6,11 @@
   "version": "0.3.0",
   "keywords": ["draggable", "sortable"],
   "dependencies": {
+    "component/each": "0.1.0",
     "component/matches-selector": "*",
     "component/emitter": "*",
     "component/events": "*",
     "component/classes": "*",
-    "component/each": "*",
     "yields/indexof": "*"
   },
   "license": "MIT",
