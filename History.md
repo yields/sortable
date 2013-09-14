@@ -1,4 +1,10 @@
 
+0.3.1 / 2013-09-15
+==================
+
+ * pin each dep
+ * remove yields/prop, use component/each
+
 0.3.0 / 2013-07-24
 ==================
 
