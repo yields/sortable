@@ -1,4 +1,3 @@
-
 /**
  * dependencies
  */
@@ -147,6 +146,9 @@ Sortable.prototype.ondragstart = function(e){
   if (this.ignored && matches(e.target, this.ignored)) return e.preventDefault();
   if (this._handle && !this.match) return e.preventDefault();
   this.draggable = e.target;
+  while (this.draggable.parentNode != this.el) {                                                                                                            
+    this.draggable = this.draggable.parentNode;                                                                                                             
+  }
   this.display = window.getComputedStyle(e.target).display;
   this.i = indexof(e.target);
   e.dataTransfer.setData('text', ' ');
