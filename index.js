@@ -212,7 +212,7 @@ Sortable.prototype.ondragend = function(e){
   this.draggable.style.display = this.display;
   classes(this.draggable).remove('dragging');
   if (this.i == indexof(this.draggable)) return;
-  this.emit('update');
+  this.emit('update', { from: this.i, to: indexof(this.draggable) });
 };
 
 /**
