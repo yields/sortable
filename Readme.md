@@ -1,4 +1,3 @@
-
 # sortable
 
   UI Sortable component, see the [demo](http://yields.github.io/sortable/index.html).
@@ -11,7 +10,7 @@
 
 #### events
 
-  - `update`, emitted when sort changes happen.
+  - `update`(e), emitted when sort changes happen.
   - `start`(e), emitted when the drag starts.
   - `drop`(e), emitted when drop happens.
 
