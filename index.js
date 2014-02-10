@@ -153,7 +153,7 @@ Sortable.prototype.ondragstart = function(e){
   while (this.draggable.parentNode != this.el) {                                                                                                            
     this.draggable = this.draggable.parentNode;                                                                                                             
   }
-  this.display = window.getComputedStyle(e.target).display;
+  this.display = e.target.style.display;
   this.i = indexof(e.target);
   e.dataTransfer.setData('text', ' ');
   e.dataTransfer.effectAllowed = 'move';
